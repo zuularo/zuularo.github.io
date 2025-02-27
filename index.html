@@ -20,61 +20,41 @@
         a:hover {
             text-decoration: underline;
         }
-    </style>
-</head>
-<body>
-    <ul>
-        <li><a href="posts/2025-02-27.html">２０２５年２月２７日</a></li>
-    </ul>
-</body>
-</html>
-
-<!-- Blog Post Template using Markdown -->
-<!-- Save as posts/2025-02-27.html -->
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>２０２５年２月２７日</title>
-    <style>
-        body {
-            background-color: #0d0d0d;
-            color: #f5f5f5;
-            font-family: "Courier New", monospace;
-            max-width: 800px;
-            margin: auto;
-            padding: 20px;
-        }
-        a {
-            color: #d47500;
-            text-decoration: none;
-        }
-        a:hover {
-            text-decoration: underline;
-        }
-        h1 {
-            border-bottom: 2px solid #d47500;
-            padding-bottom: 5px;
-        }
-        img {
-            max-width: 100%;
-            height: auto;
-        }
-        .post-content {
-            white-space: pre-wrap;
+        ul {
+            list-style-type: none;
+            padding: 0;
         }
     </style>
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            loadMarkdown("2025-02-27.md");
-        });
+        async function loadPosts() {
+            try {
+                const response = await fetch("posts/");
+                const text = await response.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(text, "text/html");
+                const links = doc.querySelectorAll("a");
+                const ul = document.createElement("ul");
+                links.forEach(link => {
+                    const filename = link.getAttribute("href");
+                    if (filename.endsWith(".md")) {
+                        const li = document.createElement("li");
+                        const a = document.createElement("a");
+                        a.href = `view.html?post=${filename}`;
+                        a.innerText = filename.replace(".md", "").replace(/(\d{2})-(\d{2})/, "$1月$2日");
+                        li.appendChild(a);
+                        ul.appendChild(li);
+                    }
+                });
+                if (ul.children.length > 0) {
+                    document.body.appendChild(ul);
+                }
+            } catch (error) {
+                console.error("Error loading posts", error);
+            }
+        }
+        document.addEventListener("DOMContentLoaded", loadPosts);
     </script>
 </head>
 <body>
-    <h1>２０２５年２月２７日</h1>
-    <div id="post" class="post-content"></div>
-    <p><a href="../index.html">ホームへ戻る</a></p>
 </body>
 </html>
-
